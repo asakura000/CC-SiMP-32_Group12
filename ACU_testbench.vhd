@@ -41,12 +41,12 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin		
-      -- hold reset state for 100 ns.
-      wait for 100 ns;	
+      -- hold reset state for 20 ns.
+      wait for 20 ns;	
 
       -- insert stimulus here 
 		
-		-- testing for lw, sw, addiu, j
+		-- testing for lw, sw, addi, addiu, j
 		I_ACU_ALUOp <= "00"; 
 		wait for 40 ns;
 		
@@ -56,6 +56,10 @@ BEGIN
 		
 		-- testing for addu
 		I_ACU_ALUOp <= "10"; I_ACU_Funct <= "100001";
+		wait for 40 ns;
+		
+		-- testing for subu
+		I_ACU_ALUOp <= "10"; I_ACU_Funct <= "100011";
 		wait for 40 ns;
 		
 		-- testing for any other ALUOp

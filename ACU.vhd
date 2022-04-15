@@ -17,15 +17,17 @@ begin
 ACU_process: process(I_ACU_ALUOp, I_ACU_Funct)
 begin
 	case I_ACU_ALUOp is
-		when "00" =>	-- lw, sw, addiu, j
+		when "00" =>	-- lw, sw, addiu, addi, j
 			O_ACU_CTL <= "0010";
 		when "01" =>	-- beq, bne
 			O_ACU_CTL <= "0110";
-		when "10" =>	-- R-type
+		when "10" =>	-- R-type (addu, subu)
 			case I_ACU_Funct is
 				when "100001" =>	-- addu
 					O_ACU_CTL <= "0010";
-				when others =>		-- addu is only "valid" funct in our design
+				when "100011" => -- subu
+					O_ACU_CTL <= "0110";
+				when others =>		-- addu/subu are the only "valid" functs in our design
 					O_ACU_CTL <= "0000";
 			end case;
 		when others => -- any other ALU Op code (basically just "11")
