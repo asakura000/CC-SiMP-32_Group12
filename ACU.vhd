@@ -25,8 +25,8 @@ begin
 			case I_ACU_Funct is
 				when "100001" =>	-- addu
 					O_ACU_CTL <= "0010";
-						when others =>		-- addu is only "valid" funct in our design
-							O_ACU_CTL <= "0000";
+				when others =>		-- addu is only "valid" funct in our design
+					O_ACU_CTL <= "0000";
 			end case;
 		when others => -- any other ALU Op code (basically just "11")
 			O_ACU_CTL <= "0000";
