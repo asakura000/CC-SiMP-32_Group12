@@ -18,8 +18,10 @@ end DEC;
 
 architecture Behavioral of DEC is
 
+-- setting any unused signals to 0 
+
 begin
-	process(I_DEC_EN)
+	process(I_DEC_EN, I_DEC_Opcode)
 	begin
 		if(I_DEC_EN = '1') then
 		case I_DEC_Opcode is
@@ -86,7 +88,7 @@ begin
 				O_DEC_ALUSrc <= '0';
 				O_DEC_RegWrite <= '0';
 			--LW
-			when "010011" =>
+			when "100011" =>
 				O_DEC_RegDst <= '0';
 				O_DEC_Jump <= '0';
 				O_DEC_Beq <= '0';
@@ -98,7 +100,7 @@ begin
 				O_DEC_ALUSrc <= '1';
 				O_DEC_RegWrite <= '1';
 			--SW
-			when "011011" =>
+			when "101011" =>
 				O_DEC_RegDst <= '0'; --Not used
 				O_DEC_Jump <= '0';
 				O_DEC_Beq <= '0';
