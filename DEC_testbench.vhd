@@ -41,12 +41,7 @@ ARCHITECTURE behavior OF DEC_testbench IS
    signal O_DEC_MemWrite : std_logic;
    signal O_DEC_ALUSrc : std_logic;
    signal O_DEC_RegWrite : std_logic;
-   -- No clocks detected in port list. Replace <clock> below with 
-   -- appropriate port name
- 
-	--Gonnna use the Enable as a clock for testing purposes.
-   constant I_DEC_EN_period : time := 10 ns;
- 
+	
 BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
@@ -64,59 +59,51 @@ BEGIN
           O_DEC_ALUSrc => O_DEC_ALUSrc,
           O_DEC_RegWrite => O_DEC_RegWrite
         );
-
-   -- Clock process definitions
-   I_DEC_EN_process :process
-   begin
-		I_DEC_EN <= '0';
-		wait for I_DEC_EN_period/2;
-		I_DEC_EN <= '1';
-		wait for I_DEC_EN_period/2;
-   end process;
- 
-
+		  
    -- Stimulus process
    stim_proc: process
-   begin		
+   begin
+		I_DEC_EN <= '1';
+		
       -- hold reset state for 100 ns.
       wait for 100 ns;
 
       -- insert stimulus here
 		--Testing ADDU and SUBU
       I_DEC_Opcode <= "000000";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing ADDI
       I_DEC_Opcode <= "001000";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing ADDIU
       I_DEC_Opcode <= "001001";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing BEQ
       I_DEC_Opcode <= "000100";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing BNE
       I_DEC_Opcode <= "000101";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing LW
       I_DEC_Opcode <= "010011";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing SW
       I_DEC_Opcode <= "011011";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing J
       I_DEC_Opcode <= "000010";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
 		--Testing Unplanned input
       I_DEC_Opcode <= "111111";
-		wait for I_DEC_EN_period*10;
+		wait for 100 ns;
 		
       wait;
    end process;
