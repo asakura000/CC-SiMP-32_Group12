@@ -73,7 +73,7 @@ architecture Behavioral of ROM is
 begin
 
 -- initialize the ROM with the text file
-ROM <= initialize_ROM("ROM_init.txt");
+ROM <= initialize_ROM("Fibonacci.bin");
 	
 fetch_instruction: process (I_ROM_EN, I_ROM_ADDR)
 	begin
