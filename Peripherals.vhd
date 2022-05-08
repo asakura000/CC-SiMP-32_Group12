@@ -195,18 +195,25 @@ entity ALU is
 end ALU;
 
 architecture Behavioral of ALU is
+	signal  O_ALU_Out_Buffer: STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
 begin
 	process(I_ALU_EN, I_ALU_CTL, I_ALU_A, I_ALU_B) is
 	begin
 		if(I_ALU_EN = '1') then
 			case I_ALU_CTL is
 				when "0010" =>
-					O_ALU_Out <= std_logic_vector(unsigned(I_ALU_A) + unsigned(I_ALU_B));
+					O_ALU_Out_Buffer <= std_logic_vector(unsigned(I_ALU_A) + unsigned(I_ALU_B));
 				when "0110" =>
-					O_ALU_Out <= std_logic_vector(unsigned(I_ALU_A) - unsigned(I_ALU_B));
+					O_ALU_Out_Buffer <= std_logic_vector(unsigned(I_ALU_A) - unsigned(I_ALU_B));
 				when others =>
 					null; --Do nothing if unexpected input.
 			end case;
+			O_ALU_Out <= O_ALU_Out_Buffer;
+			if(O_ALU_Out_Buffer = x"00000000") then
+				O_ALU_Zero <= '1';
+			else
+				O_ALU_Zero <= '0';
+			end if;
 		end if;
 	end process;
 end Behavioral;
