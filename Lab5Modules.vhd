@@ -5,9 +5,9 @@ library UNISIM;
 use UNISIM.VComponents.all;
 
 entity ACU is
-    Port ( I_ACU_ALUOp : in  STD_LOGIC_VECTOR (1 downto 0);
-           I_ACU_Funct : in  STD_LOGIC_VECTOR (5 downto 0);
-           O_ACU_CTL : out  STD_LOGIC_VECTOR (3 downto 0));
+    Port ( I_ACU_ALUOp : in  STD_LOGIC_VECTOR (1 downto 0) := (others => '0');
+           I_ACU_Funct : in  STD_LOGIC_VECTOR (5 downto 0) := (others => '0');
+           O_ACU_CTL : out  STD_LOGIC_VECTOR (3 downto 0) := (others => '0'));
 end ACU;
 
 architecture Behavioral of ACU is
@@ -41,18 +41,18 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity DEC is
-    Port ( I_DEC_EN : in  STD_LOGIC;
-           I_DEC_Opcode : in  STD_LOGIC_VECTOR (5 downto 0);
-           O_DEC_RegDst : out  STD_LOGIC;
-           O_DEC_Jump : out  STD_LOGIC;
-           O_DEC_Beq : out  STD_LOGIC;
-           O_DEC_Bne : out  STD_LOGIC;
-           O_DEC_MemRead : out  STD_LOGIC;
-           O_DEC_MemtoReg : out  STD_LOGIC;
-           O_DEC_ALUOp : out  STD_LOGIC_VECTOR (1 downto 0);
-           O_DEC_MemWrite : out  STD_LOGIC;
-           O_DEC_ALUSrc : out  STD_LOGIC;
-           O_DEC_RegWrite : out  STD_LOGIC);
+    Port ( I_DEC_EN : in  STD_LOGIC := '0';
+           I_DEC_Opcode : in  STD_LOGIC_VECTOR (5 downto 0) := (others => '0');
+           O_DEC_RegDst : out  STD_LOGIC := '0';
+           O_DEC_Jump : out  STD_LOGIC := '0';
+           O_DEC_Beq : out  STD_LOGIC := '0';
+           O_DEC_Bne : out  STD_LOGIC := '0';
+           O_DEC_MemRead : out  STD_LOGIC := '0';
+           O_DEC_MemtoReg : out  STD_LOGIC := '0';
+           O_DEC_ALUOp : out  STD_LOGIC_VECTOR (1 downto 0) := (others => '0');
+           O_DEC_MemWrite : out  STD_LOGIC := '0';
+           O_DEC_ALUSrc : out  STD_LOGIC := '0';
+           O_DEC_RegWrite : out  STD_LOGIC := '0');
 end DEC;
 
 architecture Behavioral of DEC is
@@ -62,6 +62,7 @@ architecture Behavioral of DEC is
 begin
 	process(I_DEC_EN, I_DEC_Opcode)
 	begin
+	if rising_edge(I_DEC_EN) then
 		if(I_DEC_EN = '1') then
 		case I_DEC_Opcode is
 			--R Type Instructions
@@ -177,5 +178,6 @@ begin
 				O_DEC_RegWrite <= '0';
 		end case;
 		end if;
+	end if;
 	end process;
 end Behavioral;
