@@ -11,10 +11,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity MUX32 is
-    Port ( I_MUX_0 : in  STD_LOGIC_VECTOR (31 downto 0);
-           I_MUX_1 : in  STD_LOGIC_VECTOR (31 downto 0);
-			  I_MUX_Sel : in STD_LOGIC;
-           O_MUX_Out : out STD_LOGIC_VECTOR (31 downto 0));
+    Port ( I_MUX_0 : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+           I_MUX_1 : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+			  I_MUX_Sel : in STD_LOGIC := '0';
+           O_MUX_Out : out STD_LOGIC_VECTOR (31 downto 0) := (others => '0'));
 end MUX32;
 
 architecture Behavioral of MUX32 is
@@ -35,10 +35,10 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity MUX5 is
-    Port ( I_MUX_0 : in  STD_LOGIC_VECTOR (4 downto 0);
-           I_MUX_1 : in  STD_LOGIC_VECTOR (4 downto 0);
-			  I_MUX_Sel : in STD_LOGIC;
-           O_MUX_Out : out STD_LOGIC_VECTOR (4 downto 0));
+    Port ( I_MUX_0 : in  STD_LOGIC_VECTOR (4 downto 0) := (others => '0');
+           I_MUX_1 : in  STD_LOGIC_VECTOR (4 downto 0) := (others => '0');
+			  I_MUX_Sel : in STD_LOGIC := '0';
+           O_MUX_Out : out STD_LOGIC_VECTOR (4 downto 0) := (others => '0'));
 end MUX5;
 
 architecture Behavioral of MUX5 is
@@ -59,10 +59,10 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity BranchModule is
-    Port ( beq : in  STD_LOGIC;
-           bne : in  STD_LOGIC;
-			  zero : in STD_LOGIC;
-           branch : out STD_LOGIC);
+    Port ( beq : in  STD_LOGIC := '0';
+           bne : in  STD_LOGIC := '0';
+			  zero : in STD_LOGIC := '0';
+           branch : out STD_LOGIC := '0');
 end BranchModule;
 
 architecture Behavioral of BranchModule is
@@ -84,8 +84,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity EXT is
-    Port ( I_EXT_16 : in  STD_LOGIC_VECTOR (15 downto 0);
-           O_EXT_32 : out STD_LOGIC_VECTOR (31 downto 0));
+    Port ( I_EXT_16 : in  STD_LOGIC_VECTOR (15 downto 0) := (others => '0');
+           O_EXT_32 : out STD_LOGIC_VECTOR (31 downto 0) := (others => '0'));
 end EXT;
 
 architecture Behavioral of EXT is
@@ -104,9 +104,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity JumpModule is
-    Port ( JumpImm : in  STD_LOGIC_VECTOR (25 downto 0);
-			  PC : in  STD_LOGIC_VECTOR (31 downto 0);
-           JumpAddr : out STD_LOGIC_VECTOR (31 downto 0));
+    Port ( JumpImm : in  STD_LOGIC_VECTOR (25 downto 0) := (others => '0');
+			  PC : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+           JumpAddr : out STD_LOGIC_VECTOR (31 downto 0) := (others => '0'));
 end JumpModule;
 
 architecture Behavioral of JumpModule is
@@ -124,10 +124,10 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity ADD2 is
-    Port ( I_ADD2_A : in  STD_LOGIC_VECTOR (31 downto 0);
-			  I_ADD2_B : in  STD_LOGIC_VECTOR (31 downto 0);
-           O_ADD2_Out : out STD_LOGIC_VECTOR (31 downto 0));
+entity ADD2 is --Includes shift left by 2
+    Port ( I_ADD2_A : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0'); --PC+4 goes to this one
+			  I_ADD2_B : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0'); --Immediate goes to this one
+           O_ADD2_Out : out STD_LOGIC_VECTOR (31 downto 0) := (others => '0'));
 end ADD2;
 
 architecture Behavioral of ADD2 is
@@ -148,8 +148,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity ADD1 is
-    Port ( I_ADD1_A : in  STD_LOGIC_VECTOR (31 downto 0);
-			  O_ADD1_Out : out  STD_LOGIC_VECTOR (31 downto 0));
+    Port ( I_ADD1_A : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+			  O_ADD1_Out : out  STD_LOGIC_VECTOR (31 downto 0) := (others => '0'));
 end ADD1;
 
 architecture Behavioral of ADD1 is
@@ -165,17 +165,19 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity PC is
-    Port ( I_PC_UPDATE : in  STD_LOGIC;
-			  I_PC : in  STD_LOGIC_VECTOR (31 downto 0);
-			  O_PC : out  STD_LOGIC_VECTOR (31 downto 0));
+    Port ( I_PC_UPDATE : in  STD_LOGIC := '0';
+			  I_PC : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+			  O_PC : out  STD_LOGIC_VECTOR (31 downto 0) := (others => '0'));
 end PC;
 
 architecture Behavioral of PC is
 begin
 	process(I_PC_UPDATE, I_PC) is
 	begin
-		if(I_PC_UPDATE = '1') then
-			O_PC <= I_PC;
+		if rising_edge(I_PC_UPDATE) then
+			if(I_PC_UPDATE = '1') then
+				O_PC <= I_PC;
+			end if;
 		end if;
 	end process;
 end Behavioral;
@@ -186,12 +188,12 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 entity ALU is
-    Port ( I_ALU_EN : in  STD_LOGIC;
-			  I_ALU_CTL : in  STD_LOGIC_VECTOR (3 downto 0);
-			  I_ALU_A : in  STD_LOGIC_VECTOR (31 downto 0);
-			  I_ALU_B : in  STD_LOGIC_VECTOR (31 downto 0);
-			  O_ALU_Out : out  STD_LOGIC_VECTOR (31 downto 0);
-			  O_ALU_Zero : out  STD_LOGIC);
+    Port ( I_ALU_EN : in  STD_LOGIC := '0';
+			  I_ALU_CTL : in  STD_LOGIC_VECTOR (3 downto 0) := (others => '0');
+			  I_ALU_A : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+			  I_ALU_B : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+			  O_ALU_Out : out  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+			  O_ALU_Zero : out  STD_LOGIC := '0');
 end ALU;
 
 architecture Behavioral of ALU is
@@ -199,6 +201,7 @@ architecture Behavioral of ALU is
 begin
 	process(I_ALU_EN, I_ALU_CTL, I_ALU_A, I_ALU_B) is
 	begin
+	if rising_edge(I_ALU_EN) then
 		if(I_ALU_EN = '1') then
 			case I_ALU_CTL is
 				when "0010" =>
@@ -215,5 +218,6 @@ begin
 				O_ALU_Zero <= '0';
 			end if;
 		end if;
+	end if;
 	end process;
 end Behavioral;
