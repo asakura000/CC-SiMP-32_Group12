@@ -174,10 +174,10 @@ architecture Behavioral of PC is
 begin
 	process(I_PC_UPDATE, I_PC) is
 	begin
-		if rising_edge(I_PC_UPDATE) then
-			if(I_PC_UPDATE = '1') then
+		if falling_edge(I_PC_UPDATE) then
+			--if(I_PC_UPDATE = '1') then
 				O_PC <= I_PC;
-			end if;
+			--end if;
 		end if;
 	end process;
 end Behavioral;
@@ -219,5 +219,23 @@ begin
 			end if;
 		end if;
 	end if;
+	end process;
+end Behavioral;
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity OR1bit is
+    Port ( I_Left : in  STD_LOGIC := '0';
+			  I_Right : in  STD_LOGIC := '0';
+			  O_OR_GATE : out STD_LOGIC := '0');
+end OR1bit;
+
+architecture Behavioral of OR1bit is
+begin
+	process(I_Left, I_Right) is
+	begin
+		O_OR_GATE <= I_Left OR I_Right;
 	end process;
 end Behavioral;
