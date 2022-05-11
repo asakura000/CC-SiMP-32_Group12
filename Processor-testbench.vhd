@@ -34,10 +34,10 @@ BEGIN
    -- Clock process definitions
    I_CLK_process :process
    begin
-		I_CLK <= '0';
-		wait for I_CLK_period/2;
-		I_CLK <= '1';
-		wait for I_CLK_period/2;
+	I_CLK <= '0';
+	wait for I_CLK_period/2;
+	I_CLK <= '1';
+	wait for I_CLK_period/2;
    end process;
  
 
