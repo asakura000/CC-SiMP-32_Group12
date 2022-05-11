@@ -56,9 +56,6 @@ entity DEC is
 end DEC;
 
 architecture Behavioral of DEC is
-
--- setting any unused signals to 0 
-
 begin
 	process(I_DEC_EN, I_DEC_Opcode)
 	begin

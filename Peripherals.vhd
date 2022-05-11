@@ -1,15 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity MUX32 is
     Port ( I_MUX_0 : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
            I_MUX_1 : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
@@ -131,13 +122,10 @@ entity ADD2 is --Includes shift left by 2
 end ADD2;
 
 architecture Behavioral of ADD2 is
-	signal Shifted_B : STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
 begin
 	process(I_ADD2_A, I_ADD2_B) is
 	begin
-		Shifted_B (31 downto 2) <= I_ADD2_B (29 downto 0);
-		Shifted_B (1 downto 0) <= "00";
-		O_ADD2_Out <= std_logic_vector(unsigned(I_ADD2_A) + unsigned(Shifted_B));
+		O_ADD2_Out <= std_logic_vector(unsigned(I_ADD2_A) + unsigned((I_ADD2_B (29 downto 0))&"00"));
 		-- For the above line, I_ADD2_B and Shifted_B are signed but I_ADD2_A is unsigned, and I think I need the operands to match in type to add them, so I added them both as unsigned.
 	end process;
 end Behavioral;
@@ -174,10 +162,10 @@ architecture Behavioral of PC is
 begin
 	process(I_PC_UPDATE, I_PC) is
 	begin
-		if falling_edge(I_PC_UPDATE) then
-			--if(I_PC_UPDATE = '1') then
+		if rising_edge(I_PC_UPDATE) then
+			if(I_PC_UPDATE = '1') then
 				O_PC <= I_PC;
-			--end if;
+			end if;
 		end if;
 	end process;
 end Behavioral;
@@ -197,7 +185,6 @@ entity ALU is
 end ALU;
 
 architecture Behavioral of ALU is
-	signal  O_ALU_Out_Buffer: STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
 begin
 	process(I_ALU_EN, I_ALU_CTL, I_ALU_A, I_ALU_B) is
 	begin
@@ -205,18 +192,22 @@ begin
 		if(I_ALU_EN = '1') then
 			case I_ALU_CTL is
 				when "0010" =>
-					O_ALU_Out_Buffer <= std_logic_vector(unsigned(I_ALU_A) + unsigned(I_ALU_B));
-				when "0110" =>
-					O_ALU_Out_Buffer <= std_logic_vector(unsigned(I_ALU_A) - unsigned(I_ALU_B));
-				when others =>
-					null; --Do nothing if unexpected input.
-			end case;
-			O_ALU_Out <= O_ALU_Out_Buffer;
-			if(O_ALU_Out_Buffer = x"00000000") then
+					O_ALU_Out <= std_logic_vector(unsigned(I_ALU_A) + unsigned(I_ALU_B));
+					if(std_logic_vector(unsigned(I_ALU_A) + unsigned(I_ALU_B)) = x"00000000") then
 				O_ALU_Zero <= '1';
 			else
 				O_ALU_Zero <= '0';
 			end if;
+				when "0110" =>
+					O_ALU_Out <= std_logic_vector(unsigned(I_ALU_A) - unsigned(I_ALU_B));
+					if(std_logic_vector(unsigned(I_ALU_A) - unsigned(I_ALU_B)) = x"00000000") then
+				O_ALU_Zero <= '1';
+			else
+				O_ALU_Zero <= '0';
+			end if;
+				when others =>
+					null; --Do nothing if unexpected input.
+			end case;
 		end if;
 	end if;
 	end process;
@@ -238,4 +229,122 @@ begin
 	begin
 		O_OR_GATE <= I_Left OR I_Right;
 	end process;
+end Behavioral;
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity AND1bit is
+    Port ( I_Left : in  STD_LOGIC := '0';
+			  I_Right : in  STD_LOGIC := '0';
+			  O_AND_GATE : out STD_LOGIC := '0');
+end AND1bit;
+
+architecture Behavioral of AND1bit is
+begin
+	process(I_Left, I_Right) is
+	begin
+		O_AND_GATE <= I_Left AND I_Right;
+	end process;
+end Behavioral;
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
+
+package Common is
+type processor_state is (S_INIT, S_IF, S_ID, S_EX, S_ME, S_WB, S_STOP); 
+end Common;
+
+package body Common is
+ 
+end Common;
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+library UNISIM;
+use UNISIM.VComponents.all;
+use work.Common.all;
+
+entity FSM is
+    Port ( I_FSM_CLK : in  STD_LOGIC := '0';
+           I_FSM_EN : in  STD_LOGIC := '0';
+           I_FSM_INST : in  STD_LOGIC_VECTOR (31 downto 0) := (others => '0');
+           O_FSM_IF : out  STD_LOGIC := '0';
+           O_FSM_ID : out  STD_LOGIC := '0';
+           O_FSM_EX : out  STD_LOGIC := '0';
+           O_FSM_ME : out  STD_LOGIC := '0';
+           O_FSM_WB : out  STD_LOGIC := '0');
+end FSM;
+
+architecture Behavioral of FSM is
+	signal state : processor_state := S_INIT; 
+begin
+	process(I_FSM_CLK)
+	begin
+		if rising_edge(I_FSM_CLK) then
+			if I_FSM_EN = '1' then
+					if I_FSM_INST = X"0000000c" then
+						state <= S_STOP;
+					else
+						if state = S_INIT then state <= S_IF;
+						elsif state = S_IF then state <= S_ID;
+						elsif state = S_ID then state <= S_EX;
+						elsif state = S_EX then state <= S_ME;
+						elsif state = S_ME then state <= S_WB;
+						elsif state = S_WB then state <= S_IF;
+						end if;
+					end if;
+			else 
+				if state = S_INIT then state <= S_INIT;
+				else state <= S_STOP;
+				end if;
+			end if;
+		end if;
+	end process;
+	
+	process(state)
+	begin
+		if state = S_IF then
+			O_FSM_IF <= '1';
+			O_FSM_ID <= '0';
+			O_FSM_EX <= '0';
+			O_FSM_ME <= '0';
+			O_FSM_WB <= '0';
+		elsif state = S_ID then
+			O_FSM_IF <= '0';
+			O_FSM_ID <= '1';
+			O_FSM_EX <= '0';
+			O_FSM_ME <= '0';
+			O_FSM_WB <= '0';
+		elsif state = S_EX then
+			O_FSM_IF <= '0';
+			O_FSM_ID <= '0';
+			O_FSM_EX <= '1';
+			O_FSM_ME <= '0';
+			O_FSM_WB <= '0';
+		elsif state = S_ME then
+			O_FSM_IF <= '0';
+			O_FSM_ID <= '0';
+			O_FSM_EX <= '0';
+			O_FSM_ME <= '1';
+			O_FSM_WB <= '0';
+		elsif state = S_WB then
+			O_FSM_IF <= '0';
+			O_FSM_ID <= '0';
+			O_FSM_EX <= '0';
+			O_FSM_ME <= '0';
+			O_FSM_WB <= '1';
+		else
+			O_FSM_IF <= '0';
+			O_FSM_ID <= '0';
+			O_FSM_EX <= '0';
+			O_FSM_ME <= '0';
+			O_FSM_WB <= '0';
+		end if;
+	end process;
+
 end Behavioral;
